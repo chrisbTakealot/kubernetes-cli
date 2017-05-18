@@ -36,14 +36,16 @@ class talkube():
 		Find a pod by namespace (Default all) and partial podname
 
 		"""
+		pod_found=None
 		self.print_header("Looking for pod with name: %s in namespace: %s" % (podname, namespace if namespace else "All"))
 		ret = self.v1.list_pod_for_all_namespaces(watch=False)
 		for i in ret.items:
 			if(podname in i.metadata.name) and (namespace is None or namespace == i.metadata.namespace):
-				print "Matched %s" % i.metadata.name
-				return  i.metadata.name
-		print "* No match found *"
-		return None
+				pod_found=i.metadata.name
+				continue
+		print ("Matched %s" % pod_found) if pod_found else ("* No match found *")
+		print
+		return pod_found
 
 
 	def pod_bash(self, podname):
@@ -60,31 +62,34 @@ class talkube():
 if __name__ == "__main__":
 	try:
 		print """
-	 _______       _      _  __     _          
-	|__   __|/\   | |    | |/ /    | |         
-	   | |  /  \  | |    | ' /_   _| |__   ___ 
-	   | | / /\ \ | |    |  <| | | | '_ \ / _ \\
-	   | |/ ____ \| |____| . \ |_| | |_) |  __/
-	   |_/_/    \_\______|_|\_\__,_|_.__/ \___|
-	         Takealot Kubernetes CLI Tools
+ _______       _      _  __     _          
+|__   __|/\   | |    | |/ /    | |         
+   | |  /  \  | |    | ' /_   _| |__   ___ 
+   | | / /\ \ | |    |  <| | | | '_ \ / _ \\
+   | |/ ____ \| |____| . \ |_| | |_) |  __/
+   |_/_/    \_\______|_|\_\__,_|_.__/ \___|
+         Takealot Kubernetes CLI Tools
 	         """
 
 		tkube = talkube()
-		
 		parser = argparse.ArgumentParser(description="A CLI tool for kubernetes") 
-		parser.add_argument('podname', help='podname to use (partial match)', required=False)
-		parser.add_argument('-n', '--namespace', help='Namespace to filter on', required=False)
+		parser.add_argument('podname', nargs='?', help='podname to use (partial match)')
 		parser.add_argument('-l', '--list', help='List all running pods', required=False, action='store_true')
+		parser.add_argument('-n', '--namespace', help='Namespace to filter on', required=False)
 		parser.add_argument('-b', '--bash', help='Connect to pod bash', required=False, action='store_true')
-
 		args = parser.parse_args()
 
 		# list active pods using namespace filter
 		if args.list:
 			tkube.list_pods(namespace=args.namespace)
 
+		# if no valid action has been performed, show help.
 		if args.podname is None:
-			pass 
+			if not args.list:
+				parser.print_help()
+				exit(1)
+			else:
+				exit(0)
 
 		# find podname (partial match) using namespace filter (if set)
 		podname = tkube.pod_find(podname=args.podname, namespace=args.namespace)
