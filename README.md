@@ -1,13 +1,13 @@
- _______       _      _  __     _          
-|__   __|/\   | |    | |/ /    | |         
-   | |  /  \  | |    | ' /_   _| |__   ___ 
-   | | / /\ \ | |    |  <| | | | '_ \ / _ \
-   | |/ ____ \| |____| . \ |_| | |_) |  __/
-   |_/_/    \_\______|_|\_\__,_|_.__/ \___|
-         Takealot Kubernetes CLI Tools
+     _______       _      _  __     _          
+    |__   __|/\   | |    | |/ /    | |         
+       | |  /  \  | |    | ' /_   _| |__   ___ 
+       | | / /\ \ | |    |  <| | | | '_ \ / _ \
+       | |/ ____ \| |____| . \ |_| | |_) |  __/
+       |_/_/    \_\______|_|\_\__,_|_.__/ \___|
+             Takealot Kubernetes CLI Tools
 
 
-TALKube: Takealot Kubernetes Cli Tool
+# TALKube: Takealot Kubernetes Cli Tool
 
 Ref: https://github.com/kubernetes-incubator/client-python
 
