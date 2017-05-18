@@ -1,6 +1,6 @@
 from kubernetes import client, config
 import os
-from optparse import OptionParser
+import argparse
 
 
 class talkube():
@@ -18,7 +18,7 @@ class talkube():
 		print "-" * len(header_name)
 
 	
-	def list_pods(self):
+	def list_pods(self,namespace=None):
 		"""
 		List all pods
 
@@ -26,8 +26,10 @@ class talkube():
 		self.print_header("Listing pods with their IPs:")
 		ret = self.v1.list_pod_for_all_namespaces(watch=False)
 		for i in ret.items:
-		    print("%s\t%s\t%s" % (i.status.pod_ip, i.metadata.namespace, i.metadata.name))
+			if (namespace is None or namespace == i.metadata.namespace):
+			    print("%s\t%s\t%s" % (i.status.pod_ip, i.metadata.namespace, i.metadata.name))
 		print
+
 
 	def pod_find(self, podname, namespace=None):
 		"""
@@ -68,38 +70,29 @@ if __name__ == "__main__":
 	         """
 
 		tkube = talkube()
-		tkube.list_pods()
 		
-		usage = "usage: %prog [options] podname"
-		parser = OptionParser(description="A CLI tool for kubernetes", usage=usage)
+		parser = argparse.ArgumentParser(description="A CLI tool for kubernetes") 
+		parser.add_argument('podname', help='podname to use (partial match)')
+		parser.add_argument('-l', '--list', help='List all running pods', required=False, action='store_true')
+		parser.add_argument('-n', '--namespace', help='Namespace to filter on', required=False)
 
-		parser.add_option("-l", "--list", dest="pod_list",
-	                      help="List all pod names", 
-	                      type=str,
-	                      default=None)
+		args = parser.parse_args()
 
-		parser.add_option("-n", "--namespace", dest="pod_namespace",
-	                      help="Namespace for pods [default 'All']", 
-	                      type=str,
-	                      default=None)
+		if args.list:
+			tkube.list_pods(namespace=args.namespace)
 
 
-		parser.add_option("-b", "--bash", dest="pod_bash",
-	                      help="Run bash on pod (using podname match)", 
-	                      type=int,
-	                      default=False)
+		# if len(args) != 1:
+		#     print parser.print_help()
+		#     exit()
 
+		# podname = tkube.pod_find(podname=args[0], namespace=options.pod_namespace)
+		# if podname is None:
+		# 	raise Exception("Podname %s not found" % podname)
 
-		(options, args) = parser.parse_args()
-		if len(args) != 1:
-		    print parser.print_help()
-		    exit()
-
-		podname = tkube.pod_find(podname=args[0])
-		if podname is None:
-			raise Exception("Podname %s not found" % podname)
 		# tkube.pod_find(podname="cs-admin-bff")
 		# tkube.pod_bash()
+
 	except Exception as e:
 		print
 		print "!!! Error: %s !!!" % e.message
