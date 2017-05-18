@@ -73,25 +73,26 @@ if __name__ == "__main__":
 		
 		parser = argparse.ArgumentParser(description="A CLI tool for kubernetes") 
 		parser.add_argument('podname', help='podname to use (partial match)')
-		parser.add_argument('-l', '--list', help='List all running pods', required=False, action='store_true')
 		parser.add_argument('-n', '--namespace', help='Namespace to filter on', required=False)
+		parser.add_argument('-l', '--list', help='List all running pods', required=False, action='store_true')
+		parser.add_argument('-b', '--bash', help='Connect to pod bash', required=False, action='store_true')
 
 		args = parser.parse_args()
 
+		# list active pods using namespace filter
 		if args.list:
 			tkube.list_pods(namespace=args.namespace)
 
+		if args.podname is None:
+			pass 
 
-		# if len(args) != 1:
-		#     print parser.print_help()
-		#     exit()
+		podname = tkube.pod_find(podname=args.podname, namespace=args.namespace)
+		if podname is None:
+			raise Exception("Podname %s not found" % podname)
 
-		# podname = tkube.pod_find(podname=args[0], namespace=options.pod_namespace)
-		# if podname is None:
-		# 	raise Exception("Podname %s not found" % podname)
-
-		# tkube.pod_find(podname="cs-admin-bff")
-		# tkube.pod_bash()
+		# do we run bash
+		if args.bash:
+			tkube.pod_bash(podname=podname)
 
 	except Exception as e:
 		print
