@@ -72,7 +72,7 @@ if __name__ == "__main__":
 		tkube = talkube()
 		
 		parser = argparse.ArgumentParser(description="A CLI tool for kubernetes") 
-		parser.add_argument('podname', help='podname to use (partial match)')
+		parser.add_argument('podname', help='podname to use (partial match)', required=False)
 		parser.add_argument('-n', '--namespace', help='Namespace to filter on', required=False)
 		parser.add_argument('-l', '--list', help='List all running pods', required=False, action='store_true')
 		parser.add_argument('-b', '--bash', help='Connect to pod bash', required=False, action='store_true')
@@ -86,6 +86,7 @@ if __name__ == "__main__":
 		if args.podname is None:
 			pass 
 
+		# find podname (partial match) using namespace filter (if set)
 		podname = tkube.pod_find(podname=args.podname, namespace=args.namespace)
 		if podname is None:
 			raise Exception("Podname %s not found" % podname)
