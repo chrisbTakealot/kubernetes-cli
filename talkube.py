@@ -61,10 +61,18 @@ class talkube():
 		"""
 		Connect to pod 	    	
 		$ kubectl exec -it  $_PODNAME_$ -- /bin/bash
-    	"""
-		
+    	"""		
 		self.print_header("Connecting to bash for pod: %s" % podname)
-		os.system("kubectl exec -it %s -- /bin/bash" % podname)
+		os.system("kubectl exec -it %s -- /bin/bash" % (podname))
+
+
+	def pod_delete(self, podname):
+		"""
+		Connect to pod 	    	
+		$ kubectl delete pods
+    	"""		
+		self.print_header("Deleting pod: %s" % podname)
+		os.system ("kubectl delete pods %s" % podname)
 
 
 
@@ -85,7 +93,8 @@ if __name__ == "__main__":
 		parser.add_argument('podname', nargs='?', help='podname to use (partial match)')
 		parser.add_argument('-l', '--list', help='List all running pods', required=False, action='store_true')
 		parser.add_argument('-n', '--namespace', help='Namespace to filter on', required=False)
-		parser.add_argument('-b', '--bash', help='Connect to pod bash', required=False, action='store_true')
+		parser.add_argument('-b', '--bash', help='Connect to pod bash (kubectl exec)', required=False, action='store_true')
+		parser.add_argument('-d', '--delete', help='Delete (kubectl delete)', required=False, action='store_true')
 		args = parser.parse_args()
 
 		# list active pods using namespace filter
@@ -108,6 +117,8 @@ if __name__ == "__main__":
 		# do we run bash
 		if args.bash:
 			tkube.pod_bash(podname=podname)
+		elif args.delete:
+			tkube.pod_delete(podname=podname)
 
 	except Exception as e:
 		print
