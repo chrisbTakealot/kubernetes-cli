@@ -50,9 +50,9 @@ class talkube():
 		ret = self.v1.list_pod_for_all_namespaces(watch=False)
 		for i in ret.items:
 			if(podname in i.metadata.name) and (namespace is None or namespace == i.metadata.namespace):
-				pod_found=i.metadata.name
+				pod_found={'namespace':i.metadata.namespace, 'name': i.metadata.name}
 				continue
-		print ("Matched %s" % pod_found) if pod_found else ("* No match found *")
+		print ("Match found: [%s] %s" % (pod_found['namespace'], pod_found['name'])) if pod_found else ("* No match found *")
 		print
 		return pod_found
 
@@ -62,8 +62,8 @@ class talkube():
 		Connect to pod 	    	
 		$ kubectl exec -it  $_PODNAME_$ -- /bin/bash
     	"""		
-		self.print_header("Connecting to bash for pod: %s" % podname)
-		os.system("kubectl exec -it %s -- /bin/bash" % (podname))
+		self.print_header("Connecting to bash for pod: %s" % podname['name'])
+		os.system("kubectl exec -it %s -- /bin/bash" % (podname['name']))
 
 
 	def pod_delete(self, podname):
@@ -71,8 +71,8 @@ class talkube():
 		Connect to pod 	    	
 		$ kubectl delete pods
     	"""		
-		self.print_header("Deleting pod: %s" % podname)
-		os.system ("kubectl delete pods %s" % podname)
+		self.print_header("Deleting pod: [%s] %s" % (podname['namespace'], podname['name']))
+		os.system("kubectl delete pods %s -n %s" % (podname['name'], podname['namespace']))
 
 
 
