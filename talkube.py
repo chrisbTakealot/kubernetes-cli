@@ -3,6 +3,15 @@ import os
 import argparse
 
 
+class bcolours:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    ERROR = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
 class talkube():
 	v1 = None
 
@@ -14,8 +23,8 @@ class talkube():
 
 
 	def print_header(self, header_name):
-		print header_name
-		print "-" * len(header_name)
+		print bcolours.HEADER + header_name + bcolours.ENDC
+		print bcolours.HEADER + "-" * len(header_name)  + bcolours.ENDC
 
 	
 	def list_pods(self,namespace=None):
@@ -61,7 +70,7 @@ class talkube():
 
 if __name__ == "__main__":
 	try:
-		print """
+		print bcolours.OKBLUE + """
  _______       _      _  __     _          
 |__   __|/\   | |    | |/ /    | |         
    | |  /  \  | |    | ' /_   _| |__   ___ 
@@ -69,7 +78,7 @@ if __name__ == "__main__":
    | |/ ____ \| |____| . \ |_| | |_) |  __/
    |_/_/    \_\______|_|\_\__,_|_.__/ \___|
          Takealot Kubernetes CLI Tools
-	         """
+	         """ + bcolours.ENDC
 
 		tkube = talkube()
 		parser = argparse.ArgumentParser(description="A CLI tool for kubernetes") 
@@ -102,4 +111,5 @@ if __name__ == "__main__":
 
 	except Exception as e:
 		print
-		print "!!! Error: %s !!!" % e.message
+		print bcolours.ERROR + "!!! Error: %s !!!" % e.message + bcolours.ENDC
+		print
