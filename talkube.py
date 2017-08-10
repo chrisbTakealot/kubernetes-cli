@@ -1,4 +1,5 @@
 from kubernetes import client, config
+from terminaltables import AsciiTable
 import os
 import argparse
 
@@ -34,9 +35,12 @@ class talkube():
 		"""
 		self.print_header("Listing pods with their IPs:")
 		ret = self.v1.list_pod_for_all_namespaces(watch=False)
+		table_data=[['IP','Namespace','Pod Name']]
 		for i in ret.items:
 			if (namespace is None or namespace == i.metadata.namespace):
-			    print("%s\t%s\t%s" % (i.status.pod_ip, i.metadata.namespace, i.metadata.name))
+				table_data.append([i.status.pod_ip, i.metadata.namespace, i.metadata.name])
+		table = AsciiTable(table_data)
+		print table.table
 		print
 
 
